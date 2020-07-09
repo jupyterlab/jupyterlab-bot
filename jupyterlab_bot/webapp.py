@@ -50,10 +50,6 @@ class GithubHandler(tornado.web.RequestHandler):
         pull_request = body.get("pull_request", {})
         issue_number = issue.get("number", None)
 
-        # Check valid repositories
-        if repo.get("full_name", "") not in config.REPOS:
-            return
-
         gh = Github(config.GH_TOKEN)
         wf = Workflows(config.GH_TOKEN)
 
@@ -71,7 +67,7 @@ class GithubHandler(tornado.web.RequestHandler):
             head_branch = pull_request["head"]["ref"]
 
             # Sleep for 30 seconds so builds have time to start
-            yield gen.sleep(30)
+            yield gen.sleep(15)
 
             # Cancel duplicate builds
             wf.cancel_dup_builds(repo_full_name, head_branch)
