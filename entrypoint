@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+echo " "
+echo "==================================================================================================="
+echo "==================================================================================================="
+
+source /opt/conda/etc/profile.d/conda.sh
+conda activate base
+conda info
+
+mkdir -p ${HOME}/.jupyterlab-bot
+echo ${GH_TOKEN} > ${HOME}/.jupyterlab-bot/github.token
+
+git config --global user.name "jupyterlab-bot"
+git config --global user.email "steven.silvester+bot@gmail.com"
+
+echo " "
+echo "==================================================================================================="
+echo "==================================================================================================="
+
+$@

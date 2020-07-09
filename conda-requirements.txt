@@ -1,0 +1,5 @@
+git
+pygithub
+requests
+tini
+tornado
