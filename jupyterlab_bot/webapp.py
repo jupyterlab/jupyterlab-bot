@@ -66,11 +66,10 @@ class GithubHandler(tornado.web.RequestHandler):
             repo_full_name = repo["full_name"]
             head_branch = pull_request["head"]["ref"]
 
-            # Sleep for 30 seconds so builds have time to start
-            yield gen.sleep(15)
-
+            # Sleep for 15 seconds so builds have time to start
             # Cancel duplicate builds
-            wf.cancel_dup_builds(repo_full_name, head_branch)
+            io_loop = tornado.ioloop.IOLoop.current()
+            io_loop.call_later(15, wf.cancel_dup_builds, repo_full_name, head_branch)
 
 
 def create_webapp():
