@@ -12,6 +12,17 @@ This application is heavily inspired by [Conda Forge](https://github.com/conda-f
 
 * Duplicate builds on PRs are automatically cancelled after a timeout of some seconds to account for the time between the `pull_request` event and the start of the github actions workers.
 
+### Installing the WebHook
+
+Install a [webhook](https://docs.github.com/en/developers/webhooks-and-events/creating-webhooks) on your repo:
+
+* Payload URL: https://jupyterlab-bot.herokuapp.com/hooks/github
+* Content Type: `application/json`
+* Select `Let me select invidual events`
+* Select `Pull requests` and `Pushes`
+* Ensure `Active` is checked
+* Click `Update webhook
+
 ## Development
 
 ### Conda
@@ -23,7 +34,7 @@ pip install -e .
 python run.py
 ```
 
-Open a browser and search for `http://localhost:5000/`.
+Open a browser and search for `http://localhost:5000/`.  Also browse to `/hooks/github`.
 
 ## Release
 
@@ -32,23 +43,31 @@ Open a browser and search for `http://localhost:5000/`.
 
 You will need to have an account in both Heroku and Docker.
 
-### First time
+Log in to Heroku and get Docker credentials:
 
 ```bash
 heroku login
+heroku container:login
+```
+
+If creating, run:
+
+```bash
 heroku create jupyterlab-bot
-heroku container:login
-heroku container:push web
-heroku container:release web
-heroku open
 ```
 
-### Next time
+Otherwise, run:
 
 ```bash
-heroku login
-heroku container:login
+heroku git:remote -a jupyterlab-b
+```
+
+Then run:
+
+```
 heroku container:push web
 heroku container:release web
 heroku open
 ```
+
+Browse to `/hooks/github`
