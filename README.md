@@ -21,7 +21,7 @@ Install a [webhook](https://docs.github.com/en/developers/webhooks-and-events/cr
 * Select `Let me select invidual events`
 * Select `Pull requests` and `Pushes`
 * Ensure `Active` is checked
-* Click `Update webhook
+* Click `Update webhook`
 
 ## Development
 
