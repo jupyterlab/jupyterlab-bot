@@ -59,7 +59,7 @@ heroku create jupyterlab-bot
 Otherwise, run:
 
 ```bash
-heroku git:remote -a jupyterlab-b
+heroku git:remote -a jupyterlab-bot
 ```
 
 Then run:
@@ -70,4 +70,4 @@ heroku container:release web
 heroku open
 ```
 
-Browse to `/hooks/github`
+Browse to `/hooks/github` to verify page render.
