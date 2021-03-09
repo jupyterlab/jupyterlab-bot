@@ -25,12 +25,17 @@ Install a [webhook](https://docs.github.com/en/developers/webhooks-and-events/cr
 
 ## Development
 
-### Conda
+### Installation
 
 ```bash
 conda create --name jupyterlab-bot python>=3.6 pygithub tornado --channel conda-forge
 conda activate jupyterlab-bot
 pip install -e .
+```
+
+### Local Usage
+
+```bash
 python run.py
 ```
 
