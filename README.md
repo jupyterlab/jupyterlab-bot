@@ -39,7 +39,9 @@ pip install -e .
 python run.py
 ```
 
-Open a browser and search for `http://localhost:5000/`.  Also browse to `/hooks/github`.
+Open a browser and search for `http://localhost:5000/`.
+
+Also browse to `/hooks/github` and verify page render.
 
 ## Release
 
@@ -75,4 +77,4 @@ heroku container:release web
 heroku open
 ```
 
-Browse to `/hooks/github` to verify page render.
+Browse to `/hooks/github` and verify page render.
