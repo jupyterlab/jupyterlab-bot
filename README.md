@@ -16,7 +16,7 @@ This application is heavily inspired by [Conda Forge](https://github.com/conda-f
 
 Install a [webhook](https://docs.github.com/en/developers/webhooks-and-events/creating-webhooks) on your repo:
 
-* Payload URL: https://jupyterlab-bot.herokuapp.com/hooks/github
+* Payload URL: `https://jupyterlab-bot.herokuapp.com/hooks/github`
 * Content Type: `application/json`
 * Select `Let me select invidual events`
 * Select `Pull requests` and `Pushes`
