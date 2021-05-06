@@ -78,3 +78,11 @@ heroku open
 ```
 
 Browse to `/hooks/github` and verify page render.
+
+### Heroku Configuration
+
+You will need a Github token with access to cancel builds. This 
+
+This needs to be setup on the [Heroku Application settings](https://dashboard.heroku.com/apps/jupyterlab-bot/settings)
+
+On the `Config Vars`. section set a key `GITHUB_ACCESS_TOKEN` with the value of the generated token.
