@@ -56,14 +56,14 @@ class Workflows:
     # --- Workflows API
     # ------------------------------------------------------------------------
     def get_repo_workflow_runs(
-        self, repo_full_name, branch=None, event=None, status=None
+        self, full_name, branch=None, event=None, status=None
     ):
         """
         List repository workflow runs.
 
         See: https://developer.github.com/v3/actions/workflow-runs/#list-repository-workflow-runs
         """
-        url = f"/repos/{repo_full_name}/actions/runs"
+        url = f"/repos/{full_name}/actions/runs"
         params = {}
         if branch is not None:
             params["branch"] = branch
@@ -77,14 +77,14 @@ class Workflows:
         return self._get(url, params=params)
 
     def get_workflow_runs(
-        self, repo_full_name, workflow_id, branch=None, event=None, status=None
+        self, full_name, workflow_id, branch=None, event=None, status=None
     ):
-        """     
+        """
         List all workflow runs for a workflow.
 
         See: https://developer.github.com/v3/actions/workflow-runs/#list-workflow-runs
         """
-        url = f"/repos/{repo_full_name}/actions/workflows/{workflow_id}/runs"
+        url = f"/repos/{full_name}/actions/workflows/{workflow_id}/runs"
         params = {}
         if branch is not None:
             params["branch"] = branch
@@ -97,35 +97,38 @@ class Workflows:
 
         return self._get(url, params=params)
 
-    def cancel_run(self, repo_full_name, run_id):
+    def cancel_run(self, full_name, run_id):
         """
         Cancels a workflow run using its `run_id`.
 
         See: https://developer.github.com/v3/actions/workflow-runs/#cancel-a-workflow-run
         """
-        url = f"/repos/{repo_full_name}/actions/runs/{run_id}/cancel"
+        url = f"/repos/{full_name}/actions/runs/{run_id}/cancel"
         return self._post(url)
 
-    def cancel_dup_builds(self, repo_full_name, head_branch):
+    def cancel_dup_builds(self, full_name, branch, event_type):
         """
-        Cancel duplicate builds for a `repo_full_name` and a given `head_branch`.
+        Cancel duplicate builds for a `full_name` and a given `branch` of
+        a given "event_type".
         """
         print(
-            f'Cancelling dup builds for "{repo_full_name}" and branch "{head_branch}"'
+            f'Cancelling dup "{event_type}" builds for "{full_name}" and branch "{branch}"...'
         )
         workflow_ids = set()
-        workflows = self.get_repo_workflow_runs(
-            repo_full_name, branch=head_branch, event="pull_request",
-        )
+        workflow_runs = self.get_repo_workflow_runs(
+            full_name, branch=branch, event=event_type,
+        )["workflow_runs"]
+        workflow_types = dict()
 
         status = ["queued", "in_progress"]
-        for workflow_run in workflows["workflow_runs"]:
+        for workflow_run in workflow_runs:
             if workflow_run["status"] in status:
                 workflow_ids.add(workflow_run["workflow_id"])
+                workflow_types[workflow_run["workflow_id"]] = workflow_run["event"]
 
         for workflow_id in workflow_ids:
             workflow_runs = self.get_workflow_runs(
-                repo_full_name, workflow_id, branch=head_branch, event="pull_request",
+                full_name, workflow_id, branch=branch, event=event_type,
             )
             run_ids = [
                 run["id"]
@@ -133,13 +136,15 @@ class Workflows:
                 if run["status"] in status
             ]
             ids = list(sorted(run_ids))
-            print(f"rund ids: {ids}")
+            print(f"run ids: {ids}")
 
             print(f"Checking workflow id: {workflow_id}")
             if len(ids) > 1:
                 cancel_ids = ids[:-1]
                 for run_id in cancel_ids:
-                    result = self.cancel_run(repo_full_name, run_id)
+                    result = self.cancel_run(full_name, run_id)
                     print(f"Cancelling run id: {run_id}", result)
 
             print("\n")
+
+        print(f'Finished canceling duplicate "{event_type}" builds\n')

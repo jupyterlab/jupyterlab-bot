@@ -5,6 +5,7 @@
 from urllib.parse import parse_qs
 import json
 import os
+import re
 
 # Third party imports
 import tornado.escape
@@ -45,9 +46,11 @@ class GithubHandler(tornado.web.RequestHandler):
 
         action = body.get("action", None)
         repo = body.get("repository", {})
+        full_name = repo["full_name"]
         repo_id = repo.get("id", None)
         issue = body.get("issue", {})
         pull_request = body.get("pull_request", {})
+        ref = body.get("ref", {})
         issue_number = issue.get("number", None)
 
         gh = Github(config.GH_TOKEN)
@@ -60,16 +63,26 @@ class GithubHandler(tornado.web.RequestHandler):
         print(json.dumps(body, indent=4, sort_keys=True))
         print("\n\n")
 
+        branch = None
+
         if event_type == "ping":
             self.write("pong")
-        elif event_type == "pull_request":
-            repo_full_name = repo["full_name"]
-            head_branch = pull_request["head"]["ref"]
 
+        elif event_type == "pull_request":
+            branch = pull_request["head"]["ref"]
+
+        elif event_type == "push":
+            match = re.match(r'refs/heads/(\S+)', ref)
+            if match:
+                branch = match.groups()[0]
+            else:
+                print("skipping push event for", ref)
+
+        if branch:
             # Sleep for 15 seconds so builds have time to start
             # Cancel duplicate builds
             io_loop = tornado.ioloop.IOLoop.current()
-            io_loop.call_later(15, wf.cancel_dup_builds, repo_full_name, head_branch)
+            io_loop.call_later(15, wf.cancel_dup_builds, full_name, branch, event_type)
 
 
 def create_webapp():
