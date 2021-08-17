@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Github Worflows API."""
-
 # Third party imports
 import requests
 
@@ -10,6 +9,7 @@ class Workflows:
     PyGithub does not yet provide handling workflows and runs so this small
     class will take care of those endpoints in the meantime.
     """
+
     _HEADERS = {
         "Content-Type": "application/json",
         "User-Agent": "Github Python Client",
@@ -55,9 +55,7 @@ class Workflows:
 
     # --- Workflows API
     # ------------------------------------------------------------------------
-    def get_repo_workflow_runs(
-        self, full_name, branch=None, event=None, status=None
-    ):
+    def get_repo_workflow_runs(self, full_name, branch=None, event=None, status=None):
         """
         List repository workflow runs.
 
@@ -115,20 +113,23 @@ class Workflows:
             f'Cancelling dup "{event_type}" builds for "{full_name}" and branch "{branch}"...'
         )
         workflow_ids = set()
-        workflow_runs = self.get_repo_workflow_runs(
-            full_name, branch=branch, event=event_type,
+        repo_workflow_runs = self.get_repo_workflow_runs(
+            full_name,
+            branch=branch,
+            event=event_type,
         )["workflow_runs"]
-        workflow_types = dict()
 
         status = ["queued", "in_progress"]
-        for workflow_run in workflow_runs:
-            if workflow_run["status"] in status:
-                workflow_ids.add(workflow_run["workflow_id"])
-                workflow_types[workflow_run["workflow_id"]] = workflow_run["event"]
+        for repo_workflow_run in repo_workflow_runs:
+            if repo_workflow_run["status"] in status:
+                workflow_ids.add(repo_workflow_run["workflow_id"])
 
         for workflow_id in workflow_ids:
             workflow_runs = self.get_workflow_runs(
-                full_name, workflow_id, branch=branch, event=event_type,
+                full_name,
+                workflow_id,
+                branch=branch,
+                event=event_type,
             )
             run_ids = [
                 run["id"]
@@ -147,4 +148,6 @@ class Workflows:
 
             print("\n")
 
-        print(f'Finished canceling duplicate "{event_type}" builds\n')
+        print(
+            f'Finished canceling duplicate "{event_type}" builds for "{full_name}" and branch "{branch}"...\n'
+        )

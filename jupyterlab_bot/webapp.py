@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 """JupyterLab Bot."""
-
 # Standard library imports
-from urllib.parse import parse_qs
 import json
 import os
 import re
 
-# Third party imports
 import tornado.escape
 import tornado.httpserver
 import tornado.ioloop
@@ -16,9 +13,11 @@ from github import Github
 from tornado import gen
 from tornado.log import enable_pretty_logging
 
-# Local imports
-from jupyterlab_bot.workflows import Workflows
 import jupyterlab_bot.config as config
+from jupyterlab_bot.workflows import Workflows
+
+# Third party imports
+# Local imports
 
 
 # Constants
@@ -72,7 +71,7 @@ class GithubHandler(tornado.web.RequestHandler):
             branch = pull_request["head"]["ref"]
 
         elif event_type == "push":
-            match = re.match(r'refs/heads/(\S+)', ref)
+            match = re.match(r"refs/heads/(\S+)", ref)
             if match:
                 branch = match.groups()[0]
             else:
