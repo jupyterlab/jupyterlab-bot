@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 """Configuration."""
-
 # Standard library imports
 import os
 
